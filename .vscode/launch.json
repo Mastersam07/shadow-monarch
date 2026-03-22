@@ -8,40 +8,40 @@
             "name": "Shadow Monarch (web)",
             "request": "launch",
             "type": "dart",
-            "args": ["-d", "chrome"]
+            "deviceId": "chrome"
         },
         {
             "name": "Shadow Monarch (macOS)",
             "request": "launch",
             "type": "dart",
-            "args": ["-d", "macos"]
+            "deviceId": "macos"
         },
         {
             "name": "Shadow Monarch (web, profile)",
             "request": "launch",
             "type": "dart",
-            "args": ["-d", "chrome"],
+            "deviceId": "chrome",
             "flutterMode": "profile"
         },
         {
             "name": "Shadow Monarch (macOS, profile)",
             "request": "launch",
             "type": "dart",
-            "args": ["-d", "macos"],
+            "deviceId": "macos",
             "flutterMode": "profile"
         },
         {
             "name": "Shadow Monarch (web, release)",
             "request": "launch",
             "type": "dart",
-            "args": ["-d", "chrome"],
+            "deviceId": "chrome",
             "flutterMode": "release"
         },
         {
             "name": "Shadow Monarch (macOS, release)",
             "request": "launch",
             "type": "dart",
-            "args": ["-d", "macos"],
+            "deviceId": "macos",
             "flutterMode": "release"
         }
     ]
