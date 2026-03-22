@@ -1,4 +1,6 @@
-# shadow_monarch
+# SHADOW MONARCH
+
+> Solo Leveling Dungeon Crawler | Flutter + Flame + CustomPainter
 
 A new Flutter project.
 
