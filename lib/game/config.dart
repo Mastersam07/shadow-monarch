@@ -50,4 +50,16 @@ class Config {
   static const Color wallColor = Color(0xFF1A1A2E);
   static const Color floorColor = Color(0xFF0D0D12);
   static const Color goldColor = Color(0xFFFFD700);
+
+  static const Color menuPrimaryColor = Color(0xFF6B3FA0);
+  static const Color menuAccentColor = Color(0xFF1A0A3E);
+  static const Color menuGlowColor = Color(0xFF9B6DD7);
+  static const Color menuParticleColor = Color(0xFF5A3D8A);
+  static const int menuParticleCount = 45;
+  static const double menuParticleSpeed = 15.0;
+  static const double menuPulseSpeed = 2.0;
+  static const int menuSilhouetteCount = 4;
+
+  static const String menuBgmFile = 'menu_bgm.mp3';
+  static const double menuBgmVolume = 0.6;
 }
