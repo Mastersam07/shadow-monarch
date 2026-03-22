@@ -1,0 +1,48 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Shadow Monarch (web)",
+            "request": "launch",
+            "type": "dart",
+            "args": ["-d", "chrome"]
+        },
+        {
+            "name": "Shadow Monarch (macOS)",
+            "request": "launch",
+            "type": "dart",
+            "args": ["-d", "macos"]
+        },
+        {
+            "name": "Shadow Monarch (web, profile)",
+            "request": "launch",
+            "type": "dart",
+            "args": ["-d", "chrome"],
+            "flutterMode": "profile"
+        },
+        {
+            "name": "Shadow Monarch (macOS, profile)",
+            "request": "launch",
+            "type": "dart",
+            "args": ["-d", "macos"],
+            "flutterMode": "profile"
+        },
+        {
+            "name": "Shadow Monarch (web, release)",
+            "request": "launch",
+            "type": "dart",
+            "args": ["-d", "chrome"],
+            "flutterMode": "release"
+        },
+        {
+            "name": "Shadow Monarch (macOS, release)",
+            "request": "launch",
+            "type": "dart",
+            "args": ["-d", "macos"],
+            "flutterMode": "release"
+        }
+    ]
+}
