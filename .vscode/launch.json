@@ -5,23 +5,10 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Shadow Monarch (web)",
-            "request": "launch",
-            "type": "dart",
-            "deviceId": "chrome"
-        },
-        {
             "name": "Shadow Monarch (macOS)",
             "request": "launch",
             "type": "dart",
             "deviceId": "macos"
-        },
-        {
-            "name": "Shadow Monarch (web, profile)",
-            "request": "launch",
-            "type": "dart",
-            "deviceId": "chrome",
-            "flutterMode": "profile"
         },
         {
             "name": "Shadow Monarch (macOS, profile)",
@@ -29,13 +16,6 @@
             "type": "dart",
             "deviceId": "macos",
             "flutterMode": "profile"
-        },
-        {
-            "name": "Shadow Monarch (web, release)",
-            "request": "launch",
-            "type": "dart",
-            "deviceId": "chrome",
-            "flutterMode": "release"
         },
         {
             "name": "Shadow Monarch (macOS, release)",
