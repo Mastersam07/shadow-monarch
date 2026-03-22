@@ -14,6 +14,8 @@ import '../effects/screen_effects.dart';
 import '../combat/damage_numbers.dart';
 import '../input/input_manager.dart';
 import '../input/gamepad_handler.dart';
+import '../audio/audio_manager.dart';
+import '../ui/menu_renderer.dart';
 
 enum GamePhase { menu, playing, waveBreak, gameOver }
 
@@ -27,6 +29,8 @@ class ShadowMonarchGame extends FlameGame with HasCollisionDetection, KeyboardEv
   ScreenEffects? screenFx;
   late Hud hud;
   late Room room;
+  final _menuRenderer = MenuRenderer();
+  final _audio = AudioManager();
 
   GamePhase phase = GamePhase.menu;
 
@@ -48,15 +52,20 @@ class ShadowMonarchGame extends FlameGame with HasCollisionDetection, KeyboardEv
     camera.viewfinder.visibleGameSize = Vector2(Config.roomWidth, Config.roomHeight);
     camera.viewfinder.position = Vector2(Config.roomWidth / 2, Config.roomHeight / 2);
     camera.viewfinder.anchor = Anchor.center;
+
+    await _audio.init();
+    _audio.playBgm(Config.menuBgmFile, volume: Config.menuBgmVolume);
   }
 
   @override
   void onRemove() {
     _gamepad.dispose();
+    _audio.dispose();
     super.onRemove();
   }
 
   void startGame() {
+    _audio.stopBgm();
     world.removeAll(world.children);
 
     room = Room();
@@ -170,6 +179,7 @@ class ShadowMonarchGame extends FlameGame with HasCollisionDetection, KeyboardEv
 
     switch (phase) {
       case GamePhase.menu:
+        _menuRenderer.update(dt);
         if (inputState.attackJustPressed) startGame();
       case GamePhase.playing:
         _checkEnemyPlayerCollision();
@@ -206,34 +216,13 @@ class ShadowMonarchGame extends FlameGame with HasCollisionDetection, KeyboardEv
 
     switch (phase) {
       case GamePhase.menu:
-        _renderMenu(canvas, sz);
+        _menuRenderer.render(canvas, sz);
       case GamePhase.gameOver:
         _renderGameOver(canvas, sz);
       case GamePhase.waveBreak when _currentWave > 0:
         _renderWaveClear(canvas, sz);
       case _:
     }
-  }
-
-  void _renderMenu(Canvas canvas, Vector2 sz) {
-    canvas.drawRect(
-      Rect.fromLTWH(0, 0, sz.x, sz.y),
-      _menuPaint..color = const Color(0xE0000000),
-    );
-
-    _drawCenteredText(canvas, sz, 'SHADOW', sz.y * 0.20, 42, const Color(0xFF9B6DD7), FontWeight.w900,
-        letterSpacing: 15);
-    _drawCenteredText(canvas, sz, 'MONARCH', sz.y * 0.28, 42, Colors.white, FontWeight.w900, letterSpacing: 15);
-
-    _drawCenteredText(canvas, sz, 'WASD — Move    Space — Attack    Shift — Dash', sz.y * 0.48, 12,
-        const Color(0x80FFFFFF), FontWeight.w400,
-        letterSpacing: 1);
-    _drawCenteredText(canvas, sz, 'Gamepad: Left Stick — Move    X — Attack    O / R2 — Dash', sz.y * 0.52, 11,
-        const Color(0x60FFFFFF), FontWeight.w400,
-        letterSpacing: 1);
-    _drawCenteredText(
-        canvas, sz, 'Press Space or X to begin', sz.y * 0.60, 14, const Color(0x80FFFFFF), FontWeight.w400,
-        letterSpacing: 1);
   }
 
   void _renderGameOver(Canvas canvas, Vector2 sz) {

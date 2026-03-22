@@ -2,17 +2,44 @@
 
 > Solo Leveling Dungeon Crawler | Flutter + Flame + CustomPainter
 
-A new Flutter project.
+![Shadow Monarch](docs/bg.png)
 
-## Getting Started
+## About
 
-This project is a starting point for a Flutter application.
+Shadow Monarch is a top-down dungeon crawler inspired by **Solo Leveling**. Play as Sung Jin-Woo — clear gates, fight magic beasts, and extract shadows.
 
-A few resources to get you started if this is your first Flutter project:
+Built with **Flutter**, **Flame**, and **CustomPainter** for cinematic effects. Supports keyboard and PS5 DualSense gamepad.
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+## Features
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- 3-hit combo attack system with dash mechanics
+- Dire Wolf enemies with chase and lunge AI
+- Escalating wave system
+- Particle explosions, screen shake, damage numbers
+- HUD with health, MP, and shadow gauge
+- PS5 DualSense / generic gamepad support (D-pad, analog sticks, buttons)
+- Atmospheric menu with Solo Leveling soundtrack
+
+## Running
+
+```bash
+flutter run -d macos    # desktop
+```
+
+## Controls
+
+| Action | Keyboard | Gamepad |
+|--------|----------|---------|
+| Move | WASD / Arrow Keys | Left Stick / D-Pad |
+| Attack | Space | X (Cross) |
+| Dash | Shift | O (Circle) / R2 |
+| Aim | Mouse | Right Stick |
+
+## Roadmap
+
+- [x] Phase 1 — Core combat in single room
+- [ ] Phase 2 — Multi-room gates with doors
+- [ ] Phase 3 — ARISE extraction + shadow soldiers
+- [ ] Phase 4 — Progression, more enemies/bosses
+- [ ] Phase 5 — Touch input
+- [ ] Phase 6 — Endgame + polish

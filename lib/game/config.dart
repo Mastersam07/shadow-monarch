@@ -55,8 +55,8 @@ class Config {
   static const Color menuAccentColor = Color(0xFF1A0A3E);
   static const Color menuGlowColor = Color(0xFF9B6DD7);
   static const Color menuParticleColor = Color(0xFF5A3D8A);
-  static const int menuParticleCount = 45;
-  static const double menuParticleSpeed = 15.0;
+  static const int menuParticleCount = 80;
+  static const double menuParticleSpeed = 20.0;
   static const double menuPulseSpeed = 2.0;
   static const int menuSilhouetteCount = 4;
 
