@@ -5,19 +5,29 @@ class AudioManager {
 
   Future<void> init() async => await FlameAudio.audioCache.loadAll([]);
 
-  void playBgm(String filename, {double volume = 0.6}) {
+  Future<void> playBgm(String filename, {double volume = 0.6}) async {
     if (_bgmPlaying) return;
-    FlameAudio.bgm.play(filename, volume: volume);
+    _ensureBgmAlive();
+    await FlameAudio.bgm.play(filename, volume: volume);
     _bgmPlaying = true;
   }
 
-  void stopBgm() {
+  Future<void> stopBgm() async {
     if (!_bgmPlaying) return;
-    FlameAudio.bgm.stop();
+    await FlameAudio.bgm.stop();
     _bgmPlaying = false;
   }
 
   void playSfx(String filename, {double volume = 1.0}) => FlameAudio.play(filename, volume: volume);
 
-  void dispose() => FlameAudio.bgm.dispose();
+  void dispose() {
+    if (_bgmPlaying) FlameAudio.bgm.stop();
+    _bgmPlaying = false;
+  }
+
+  void _ensureBgmAlive() {
+    if (FlameAudio.bgm.audioPlayer.state == PlayerState.disposed) {
+      FlameAudio.bgm.audioPlayer = AudioPlayer()..audioCache = FlameAudio.audioCache;
+    }
+  }
 }
