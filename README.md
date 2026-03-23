@@ -23,9 +23,9 @@ Built with **Flutter**, **Flame**, and **CustomPainter** for cinematic effects. 
 ## Screenshots
 
 <p>
-  <img src="docs/1.png" width="270" alt="Combat" />
-  <img src="docs/2.png" width="270" alt="Boss Fight" />
-  <img src="docs/3.png" width="270" alt="Game Over" />
+  <img src="docs/1.png" width="270" height="175" alt="Combat" />
+  <img src="docs/2.png" width="270" height="175" alt="Boss Fight" />
+  <img src="docs/3.png" width="270" height="175" alt="Game Over" />
 </p>
 
 ## Running
