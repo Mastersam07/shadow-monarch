@@ -8,8 +8,9 @@ class Hud extends PositionComponent {
   int wave;
   int score;
   int enemiesLeft;
+  int gateNumber;
 
-  Hud({required this.player, this.wave = 0, this.score = 0, this.enemiesLeft = 0});
+  Hud({required this.player, this.wave = 0, this.score = 0, this.enemiesLeft = 0, this.gateNumber = 1});
 
   @override
   void render(Canvas canvas) {
@@ -112,7 +113,7 @@ class Hud extends PositionComponent {
   }
 
   void _drawWaveInfo(Canvas canvas) {
-    final waveText = 'GATE 1 — ROOM $wave';
+    final waveText = 'GATE $gateNumber — ROOM $wave';
     _drawLabel(canvas, waveText, Config.roomWidth - 160, 16, 11, color: const Color(0x80FFFFFF));
 
     if (enemiesLeft > 0) {
