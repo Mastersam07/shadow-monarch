@@ -160,7 +160,7 @@ class AriseEffect extends Component {
     canvas.drawOval(
         Rect.fromCenter(center: Offset(_targetX, _targetY + 20), width: poolW, height: poolH),
         Paint()
-          ..color = Colors.black.withOpacity(0.9 * poolAlpha)
+          ..color = Colors.black.withValues(alpha: 0.9 * poolAlpha)
           ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 3));
 
     canvas.drawOval(
@@ -199,11 +199,11 @@ class AriseEffect extends Component {
             Offset(p.x, p.y),
             p.size * 2.5,
             Paint()
-              ..color = p.color.withOpacity(0.15)
+              ..color = p.color.withValues(alpha: 0.15)
               ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 4));
       }
 
-      canvas.drawCircle(Offset(p.x, p.y), p.size, Paint()..color = p.color.withOpacity(0.8));
+      canvas.drawCircle(Offset(p.x, p.y), p.size, Paint()..color = p.color.withValues(alpha: 0.8));
     }
   }
 
@@ -259,7 +259,7 @@ class AriseEffect extends Component {
         Offset(_targetX, _targetY - 20),
         30,
         Paint()
-          ..color = _soldierColor.withOpacity(0.2 * (1 - revealProgress * 0.5))
+          ..color = _soldierColor.withValues(alpha: 0.2 * (1 - revealProgress * 0.5))
           ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 12));
 
     if (revealProgress > 0.3) {
@@ -291,8 +291,8 @@ class AriseEffect extends Component {
           fontSize: 18,
           fontWeight: FontWeight.w700,
           letterSpacing: 6,
-          color: _soldierColor.withOpacity(alpha),
-          shadows: [Shadow(color: _soldierColor.withOpacity(alpha * 0.5), blurRadius: 8)],
+          color: _soldierColor.withValues(alpha: alpha),
+          shadows: [Shadow(color: _soldierColor.withValues(alpha: alpha * 0.5), blurRadius: 8)],
         ),
       ),
       textDirection: TextDirection.ltr,

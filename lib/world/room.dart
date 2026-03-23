@@ -144,8 +144,10 @@ class Room extends PositionComponent {
               ..color = Config.healColor.withValues(alpha: 0.15)
               ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 12));
         canvas.drawCircle(Offset(cx, cy), 12, Paint()..color = Config.healColor.withValues(alpha: 0.4));
-        canvas.drawRect(Rect.fromCenter(center: Offset(cx, cy), width: 4, height: 16), Paint()..color = Config.healColor);
-        canvas.drawRect(Rect.fromCenter(center: Offset(cx, cy), width: 16, height: 4), Paint()..color = Config.healColor);
+        canvas.drawRect(
+            Rect.fromCenter(center: Offset(cx, cy), width: 4, height: 16), Paint()..color = Config.healColor);
+        canvas.drawRect(
+            Rect.fromCenter(center: Offset(cx, cy), width: 16, height: 4), Paint()..color = Config.healColor);
       case RoomType.treasure:
         canvas.drawRect(Rect.fromLTWH(0, 0, w, h), Paint()..color = Config.goldColor.withValues(alpha: 0.03));
         final cx = w / 2, cy = h / 2;
