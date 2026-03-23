@@ -46,13 +46,10 @@ class Gate {
       } else if (i == 0) {
         type = RoomType.combat; // first room is always combat
       } else if (i == roomCount - 2) {
-        // Room before boss: rest to heal up
         type = RoomType.rest;
       } else if (i == (roomCount ~/ 2)) {
-        // Mid-gate elite
         type = RoomType.elite;
       } else {
-        // Random: 60% combat, 15% treasure, 25% combat
         final roll = rng.nextDouble();
         if (roll < 0.15 && i > 1) {
           type = RoomType.treasure;

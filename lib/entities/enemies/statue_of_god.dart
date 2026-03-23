@@ -16,17 +16,14 @@ class StatueOfGod extends PositionComponent with CollisionCallbacks {
   double _hitFlash = 0;
   double _time = 0;
 
-  // Phase
-  int _phase = 1; // 1 = fist slams, 2 = fist + laser
+  int _phase = 1;
 
-  // Fist slam
   double _fistCooldown = 2.0;
   double _fistWindup = 0;
   bool _fistSlamming = false;
   double _fistFlash = 0;
   double _fistTargetX = 0, _fistTargetY = 0;
 
-  // Laser (phase 2)
   double _laserCooldown = 3.0;
   double _laserTimer = 0;
   bool _isLasering = false;
@@ -65,7 +62,6 @@ class StatueOfGod extends PositionComponent with CollisionCallbacks {
     _hitFlash = 0.15;
     // TODO(mastersam07): Play SFX — boss hit (massive stone impact)
 
-    // Phase transition
     if (hp <= Config.bossStatueHpPhase1 && _phase == 1) {
       _phase = 2;
       _laserCooldown = 1.5;
@@ -98,14 +94,10 @@ class StatueOfGod extends PositionComponent with CollisionCallbacks {
     final dy = player.position.y - position.y;
     _facingAngle = atan2(dy, dx);
 
-    // Boss doesn't chase — stays in upper area, drifts slowly
     position.x += sin(_time * 0.3) * 20 * dt;
     position.y = position.y.clamp(Config.roomHeight * 0.15, Config.roomHeight * 0.35);
 
-    // Fist slam logic
     _updateFistSlam(dt);
-
-    // Laser logic (phase 2 only)
     if (_phase >= 2) _updateLaser(dt);
   }
 
@@ -178,7 +170,6 @@ class StatueOfGod extends PositionComponent with CollisionCallbacks {
       return;
     }
 
-    // Aura
     final pulseS = 1.0 + 0.03 * sin(_time * 2);
     canvas.drawCircle(
         Offset(cx, cy),
@@ -187,11 +178,9 @@ class StatueOfGod extends PositionComponent with CollisionCallbacks {
           ..color = Color.fromRGBO(255, 30, 30, _phase >= 2 ? 0.12 : 0.06)
           ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 15));
 
-    // Shadow
     canvas.drawOval(Rect.fromCenter(center: Offset(cx, cy + 16), width: s * 2.5, height: s * 0.8),
         Paint()..color = const Color(0x50000000));
 
-    // Hit flash
     if (_hitFlash > 0) {
       canvas.drawCircle(
           Offset(cx, cy),
@@ -201,7 +190,6 @@ class StatueOfGod extends PositionComponent with CollisionCallbacks {
             ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 8));
     }
 
-    // Fist slam telegraph
     if (_fistWindup > 0) {
       final progress = 1.0 - (_fistWindup / 0.8);
       final tx = _fistTargetX - position.x + cx;
@@ -221,7 +209,6 @@ class StatueOfGod extends PositionComponent with CollisionCallbacks {
             ..strokeWidth = 2);
     }
 
-    // Fist slam impact
     if (_fistSlamming) {
       final tx = _fistTargetX - position.x + cx;
       final ty = _fistTargetY - position.y + cy;
@@ -233,11 +220,9 @@ class StatueOfGod extends PositionComponent with CollisionCallbacks {
             ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 12));
     }
 
-    // Body — large imposing shape
     canvas.save();
     canvas.translate(cx, cy);
 
-    // Torso
     final bodyPath = Path()
       ..moveTo(0, -s * 0.8)
       ..lineTo(-s * 0.7, -s * 0.2)
@@ -257,7 +242,6 @@ class StatueOfGod extends PositionComponent with CollisionCallbacks {
           ..style = PaintingStyle.stroke
           ..strokeWidth = 1.5);
 
-    // Head
     canvas.drawRRect(
         RRect.fromRectAndRadius(
             Rect.fromCenter(center: Offset(0, -s * 0.6), width: s * 0.8, height: s * 0.7), const Radius.circular(4)),
@@ -270,7 +254,6 @@ class StatueOfGod extends PositionComponent with CollisionCallbacks {
           ..style = PaintingStyle.stroke
           ..strokeWidth = 1);
 
-    // Eye (center of forehead)
     final eyeGlow = _phase >= 2 ? 0.8 : 0.4;
     final eyeColor = _isLasering ? const Color(0xFFFF0000) : Color.fromRGBO(255, 60, 30, eyeGlow);
     canvas.drawCircle(
@@ -282,28 +265,23 @@ class StatueOfGod extends PositionComponent with CollisionCallbacks {
     canvas.drawCircle(Offset(0, -s * 0.6), 5, Paint()..color = eyeColor);
     canvas.drawCircle(Offset(0, -s * 0.6), 2.5, Paint()..color = Colors.white.withValues(alpha: 0.6));
 
-    // Laser beam
     if (_isLasering) {
       final laserRot = _laserAngle - _facingAngle;
       canvas.save();
       canvas.rotate(laserRot);
-      // Beam glow
       canvas.drawRect(
           Rect.fromLTWH(0, -Config.bossStatueLaserWidth / 2, 500, Config.bossStatueLaserWidth),
           Paint()
             ..color = const Color(0x40FF0000)
             ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 12));
-      // Beam core
       canvas.drawRect(Rect.fromLTWH(0, -Config.bossStatueLaserWidth / 4, 500, Config.bossStatueLaserWidth / 2),
           Paint()..color = const Color(0xCCFF3030));
-      // Beam center
       canvas.drawRect(Rect.fromLTWH(0, -2, 500, 4), Paint()..color = const Color(0xFFFFAAAA));
       canvas.restore();
     }
 
     canvas.restore();
 
-    // Boss health bar (wide, at top)
     _drawBossHealthBar(canvas, cx, s);
   }
 
@@ -313,16 +291,13 @@ class StatueOfGod extends PositionComponent with CollisionCallbacks {
     final barY = 4.0;
     final frac = healthFraction;
 
-    // Background
     canvas.drawRRect(RRect.fromRectAndRadius(Rect.fromLTWH(barX, barY, barW, 6), const Radius.circular(3)),
         Paint()..color = const Color(0x40FFFFFF));
 
-    // Fill
     final barColor = frac > 0.5 ? Config.healthColor : const Color(0xFFFF6600);
     canvas.drawRRect(RRect.fromRectAndRadius(Rect.fromLTWH(barX, barY, barW * frac, 6), const Radius.circular(3)),
         Paint()..color = barColor);
 
-    // Phase indicator
     final phaseMark = barX + barW * (Config.bossStatueHpPhase1 / maxHp);
     canvas.drawLine(
         Offset(phaseMark, barY),
@@ -331,7 +306,6 @@ class StatueOfGod extends PositionComponent with CollisionCallbacks {
           ..color = const Color(0x80FFFFFF)
           ..strokeWidth = 1);
 
-    // Name
     final tp = TextPainter(
         text: TextSpan(
             text: 'STATUE OF GOD',
@@ -345,7 +319,6 @@ class StatueOfGod extends PositionComponent with CollisionCallbacks {
     final alpha = (1 - _deathTimer / 2.0).clamp(0.0, 1.0);
     final shake = sin(_deathTimer * 30) * 3 * alpha;
 
-    // Crumbling pieces
     final rng = Random(hashCode);
     final pieces = 12 + (_deathTimer * 10).floor();
     for (int i = 0; i < pieces; i++) {
@@ -359,7 +332,6 @@ class StatueOfGod extends PositionComponent with CollisionCallbacks {
       );
     }
 
-    // Final flash
     if (_deathTimer < 0.5) {
       canvas.drawCircle(
           Offset(cx, cy),

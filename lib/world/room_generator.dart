@@ -46,18 +46,15 @@ class RoomGenerator {
     final pillars = <Pillar>[];
     final spawns = <Vector2>[];
 
-    // Random pillar clusters (2-4 pillars)
     final pillarCount = 2 + _rng.nextInt(3);
     for (int i = 0; i < pillarCount; i++) {
       final x = Config.wallThickness + 80 + _rng.nextDouble() * (Config.roomWidth - Config.wallThickness * 2 - 160);
       final y = Config.wallThickness + 60 + _rng.nextDouble() * (Config.roomHeight - Config.wallThickness * 2 - 160);
-      // Don't place too close to doors
       if (y < 50 || y > Config.roomHeight - 50) continue;
       if ((x - Config.roomWidth / 2).abs() < 40 && (y < 50 || y > Config.roomHeight - 50)) continue;
       pillars.add(Pillar(x, y, Config.pillarSize));
     }
 
-    // Enemy spawn points (upper half of room)
     for (int i = 0; i < data.enemyCount; i++) {
       spawns.add(Vector2(
         Config.wallThickness + 50 + _rng.nextDouble() * (Config.roomWidth - Config.wallThickness * 2 - 100),
@@ -74,11 +71,9 @@ class RoomGenerator {
   }
 
   static RoomLayout _generateEliteRoom(RoomData data) {
-    // Symmetrical pillar layout for elite fights
     final pillars = <Pillar>[];
     final cx = Config.roomWidth / 2;
 
-    // Four corner pillars
     pillars.add(Pillar(cx - 120, 150, Config.pillarSize));
     pillars.add(Pillar(cx + 120, 150, Config.pillarSize));
     pillars.add(Pillar(cx - 120, Config.roomHeight - 180, Config.pillarSize));
@@ -101,7 +96,6 @@ class RoomGenerator {
   }
 
   static RoomLayout _generateBossRoom() {
-    // Open arena with minimal cover
     final cx = Config.roomWidth / 2;
     return RoomLayout(
       type: RoomType.boss,

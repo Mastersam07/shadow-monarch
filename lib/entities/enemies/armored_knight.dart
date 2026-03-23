@@ -43,11 +43,9 @@ class ArmoredKnight extends PositionComponent with CollisionCallbacks {
   void takeDamage(int damage, {double? fromAngle}) {
     if (_isDead) return;
 
-    // Check if attack is blocked (from the front)
     if (fromAngle != null) {
       var angleDiff = (fromAngle - _facingAngle + pi) % (2 * pi) - pi;
       if (angleDiff.abs() < Config.knightBlockArc / 2) {
-        // Blocked! Reduced damage
         damage = (damage * 0.3).ceil();
         _stunTimer = 0.05;
         // TODO(mastersam07): Play SFX — shield block (metallic clang)
@@ -127,7 +125,6 @@ class ArmoredKnight extends PositionComponent with CollisionCallbacks {
     super.onCollisionStart(intersectionPoints, other);
     if (other is AttackHitbox && !other.hasHit(hashCode)) {
       other.markHit(hashCode);
-      // Pass attack angle for block check
       final p = parent;
       double? attackAngle;
       if (p is PositionComponent) {
@@ -157,7 +154,6 @@ class ArmoredKnight extends PositionComponent with CollisionCallbacks {
     final cx = size.x / 2, cy = size.y / 2;
     final s = Config.knightSize;
 
-    // Shadow
     canvas.drawOval(
         Rect.fromCenter(center: Offset(cx, cy + 6), width: 22, height: 9), Paint()..color = const Color(0x40000000));
 
@@ -165,7 +161,6 @@ class ArmoredKnight extends PositionComponent with CollisionCallbacks {
     canvas.translate(cx, cy);
     canvas.rotate(_facingAngle + pi / 2);
 
-    // Hit flash
     if (_hitFlash > 0) {
       canvas.drawCircle(
           Offset.zero,
@@ -175,7 +170,6 @@ class ArmoredKnight extends PositionComponent with CollisionCallbacks {
             ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 5));
     }
 
-    // Shield (frontal arc)
     final shieldPath = Path()
       ..moveTo(-s * 0.6, -s * 0.2)
       ..quadraticBezierTo(-s * 0.8, -s * 0.8, 0, -s * 1.1)
@@ -189,7 +183,6 @@ class ArmoredKnight extends PositionComponent with CollisionCallbacks {
           ..style = PaintingStyle.stroke
           ..strokeWidth = 1);
 
-    // Body
     final bodyPath = Path()
       ..moveTo(0, -s * 0.7)
       ..lineTo(-s * 0.5, s * 0.4)
@@ -203,7 +196,6 @@ class ArmoredKnight extends PositionComponent with CollisionCallbacks {
           ..style = PaintingStyle.stroke
           ..strokeWidth = 1);
 
-    // Helmet visor (slit)
     canvas.drawLine(
         Offset(-4, -s * 0.3),
         Offset(4, -s * 0.3),
@@ -212,7 +204,6 @@ class ArmoredKnight extends PositionComponent with CollisionCallbacks {
           ..strokeWidth = 2
           ..strokeCap = StrokeCap.round);
 
-    // Slash arc
     if (_isSlashing) {
       final arcAlpha = (_slashTimer / 0.25).clamp(0.0, 1.0);
       final arcPath = Path()
@@ -224,7 +215,6 @@ class ArmoredKnight extends PositionComponent with CollisionCallbacks {
 
     canvas.restore();
 
-    // Health bar
     if (hp < maxHp) {
       final barW = 28.0, barH = 3.0;
       final barX = cx - barW / 2, barY = cy - s - 8;

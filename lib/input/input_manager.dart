@@ -12,7 +12,12 @@ class InputState {
   bool dash = false;
   bool dashJustPressed = false;
   bool interact = false;
+  bool ability1 = false;
+  bool ability1JustPressed = false;
   bool pause = false;
+
+  bool debugKill = false;
+  bool debugHeal = false;
 
   double get aimAngle => atan2(aimY, aimX);
 
@@ -27,6 +32,9 @@ class InputState {
   void reset() {
     attackJustPressed = false;
     dashJustPressed = false;
+    ability1JustPressed = false;
+    debugKill = false;
+    debugHeal = false;
   }
 }
 
@@ -54,6 +62,19 @@ class KeyboardInputHandler {
           (event.logicalKey == LogicalKeyboardKey.shiftLeft || event.logicalKey == LogicalKeyboardKey.shiftRight)) {
         state.dashJustPressed = true;
       }
+      if (event.logicalKey == LogicalKeyboardKey.keyE) {
+        state.ability1JustPressed = true;
+      }
+
+      final ctrlHeld = _keys.contains(LogicalKeyboardKey.controlLeft) ||
+          _keys.contains(LogicalKeyboardKey.controlRight) ||
+          _keys.contains(LogicalKeyboardKey.metaLeft); // Cmd on macOS
+      if (ctrlHeld && event.logicalKey == LogicalKeyboardKey.keyK) {
+        state.debugKill = true;
+      }
+      if (ctrlHeld && event.logicalKey == LogicalKeyboardKey.keyH) {
+        state.debugHeal = true;
+      }
     } else if (event is KeyUpEvent) {
       _keys.remove(event.logicalKey);
     }
@@ -79,6 +100,7 @@ class KeyboardInputHandler {
 
     state.attack = _keys.contains(LogicalKeyboardKey.space);
     state.dash = _keys.contains(LogicalKeyboardKey.shiftLeft) || _keys.contains(LogicalKeyboardKey.shiftRight);
+    state.ability1 = _keys.contains(LogicalKeyboardKey.keyE);
     state.interact = _keys.contains(LogicalKeyboardKey.keyF);
     state.pause = _keys.contains(LogicalKeyboardKey.escape);
 

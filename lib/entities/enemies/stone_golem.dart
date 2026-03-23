@@ -75,7 +75,6 @@ class StoneGolem extends PositionComponent with CollisionCallbacks {
     final dy = player.position.y - position.y;
     final dist = sqrt(dx * dx + dy * dy);
 
-    // Slam attack
     if (_slamWindup > 0) {
       _slamWindup -= dt;
       if (_slamWindup <= 0) {
@@ -102,7 +101,6 @@ class StoneGolem extends PositionComponent with CollisionCallbacks {
         return;
       }
 
-      // Slow chase
       if (dist > 35) {
         position.x += (dx / dist) * Config.golemSpeed * dt;
         position.y += (dy / dist) * Config.golemSpeed * dt;
@@ -133,7 +131,6 @@ class StoneGolem extends PositionComponent with CollisionCallbacks {
     if (_isDead) {
       final alpha = (1 - _deathTimer / 0.6).clamp(0.0, 1.0);
       final cx = size.x / 2, cy = size.y / 2;
-      // Crumble effect
       final rng = Random(hashCode);
       for (int i = 0; i < 6; i++) {
         final ox = (rng.nextDouble() - 0.5) * Config.golemSize * 2 * _deathTimer;
@@ -150,11 +147,9 @@ class StoneGolem extends PositionComponent with CollisionCallbacks {
     final cx = size.x / 2, cy = size.y / 2;
     final s = Config.golemSize;
 
-    // Shadow
     canvas.drawOval(Rect.fromCenter(center: Offset(cx, cy + 8), width: s * 2, height: s * 0.8),
         Paint()..color = const Color(0x40000000));
 
-    // Hit flash
     if (_hitFlash > 0) {
       canvas.drawCircle(
           Offset(cx, cy),
@@ -164,7 +159,6 @@ class StoneGolem extends PositionComponent with CollisionCallbacks {
             ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 6));
     }
 
-    // Slam windup telegraph — red circle expanding
     if (_slamWindup > 0) {
       final progress = 1.0 - (_slamWindup / Config.golemSlamWindup);
       canvas.drawCircle(
@@ -182,7 +176,6 @@ class StoneGolem extends PositionComponent with CollisionCallbacks {
             ..strokeWidth = 2);
     }
 
-    // Slam impact flash
     if (_isSlamming) {
       canvas.drawCircle(
           Offset(cx, cy),
@@ -192,7 +185,6 @@ class StoneGolem extends PositionComponent with CollisionCallbacks {
             ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 10));
     }
 
-    // Body — chunky rounded square
     canvas.save();
     canvas.translate(cx, cy);
 
@@ -205,7 +197,6 @@ class StoneGolem extends PositionComponent with CollisionCallbacks {
           ..style = PaintingStyle.stroke
           ..strokeWidth = 1.5);
 
-    // Glowing core
     canvas.drawCircle(
         Offset(0, -2),
         6,
@@ -214,7 +205,6 @@ class StoneGolem extends PositionComponent with CollisionCallbacks {
           ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 4));
     canvas.drawCircle(Offset(0, -2), 3, Paint()..color = Config.golemCoreColor);
 
-    // Stone texture lines
     canvas.drawLine(
         Offset(-s * 0.5, -s * 0.3),
         Offset(s * 0.3, -s * 0.6),
@@ -230,7 +220,6 @@ class StoneGolem extends PositionComponent with CollisionCallbacks {
 
     canvas.restore();
 
-    // Health bar
     if (hp < maxHp) {
       final barW = 32.0, barH = 3.0;
       final barX = cx - barW / 2, barY = cy - s - 10;

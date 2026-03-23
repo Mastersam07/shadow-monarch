@@ -28,7 +28,6 @@ class Config {
   static const double wolfLungeCooldown = 3.0;
   static const double wolfAggroRange = 180.0;
 
-  // Stone Golem
   static const double golemSpeed = 40.0;
   static const double golemSize = 24.0;
   static const int golemHp = 6;
@@ -39,7 +38,6 @@ class Config {
   static const double golemSlamWindup = 0.6;
   static const double golemAggroRange = 160.0;
 
-  // Armored Knight
   static const double knightSpeed = 55.0;
   static const double knightSize = 18.0;
   static const int knightHp = 4;
@@ -49,7 +47,6 @@ class Config {
   static const double knightSlashCooldown = 2.0;
   static const double knightAggroRange = 170.0;
 
-  // Statue of God (Boss)
   static const double bossStatueSize = 50.0;
   static const int bossStatueHpPhase1 = 20;
   static const int bossStatueHpTotal = 40;

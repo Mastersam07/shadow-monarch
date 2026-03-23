@@ -46,3 +46,5 @@ app.*.map.json
 
 CLAUDE.md
 GDD.md
+*_old/
+*_old_*/

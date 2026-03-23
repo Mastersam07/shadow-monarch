@@ -9,7 +9,6 @@ class RoomTransition extends Component {
   String _text = '';
   String _subText = '';
 
-  // 0-0.4: fade to black, 0.4-0.6: hold (room loads), 0.6-1.0: fade in
   static const _duration = 1.2;
   static const _fadeOutEnd = 0.4;
   static const _fadeInStart = 0.6;
@@ -47,25 +46,25 @@ class RoomTransition extends Component {
     if (_timer >= _duration) {
       _active = false;
       _alpha = 0;
-    } else if (_timer < _fadeOutEnd * _duration) {
-      _alpha = (_timer / (_fadeOutEnd * _duration)).clamp(0.0, 1.0);
-    } else if (_timer < _fadeInStart * _duration) {
-      _alpha = 1.0;
     } else {
-      _alpha = 1.0 - ((_timer - _fadeInStart * _duration) / ((1.0 - _fadeInStart) * _duration)).clamp(0.0, 1.0);
+      final fadeOutTime = _fadeOutEnd * _duration;
+      final fadeInTime = _fadeInStart * _duration;
+      _alpha = switch (_timer) {
+        final t when t < fadeOutTime => (t / fadeOutTime).clamp(0.0, 1.0),
+        final t when t < fadeInTime => 1.0,
+        final t => 1.0 - ((t - fadeInTime) / ((1.0 - _fadeInStart) * _duration)).clamp(0.0, 1.0),
+      };
     }
   }
 
   void renderOverlay(Canvas canvas, Size sz) {
     if (!_active && _alpha < 0.01) return;
 
-    // Black overlay
     canvas.drawRect(
       Rect.fromLTWH(0, 0, sz.width, sz.height),
       Paint()..color = Color.fromRGBO(0, 0, 0, _alpha.clamp(0.0, 1.0)),
     );
 
-    // Text (only during hold phase)
     if (_timer > _fadeOutEnd * _duration && _timer < (_fadeInStart + 0.15) * _duration) {
       final textAlpha = _alpha.clamp(0.0, 1.0);
 

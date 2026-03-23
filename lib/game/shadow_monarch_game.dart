@@ -22,8 +22,12 @@ import '../input/input_manager.dart';
 import '../input/gamepad_handler.dart';
 import '../audio/audio_manager.dart';
 import '../ui/menu_renderer.dart';
+import '../effects/arise_effect.dart';
+import '../entities/shadows/shadow_soldier.dart';
+import '../entities/shadows/igris.dart';
+import '../combat/abilities.dart';
 
-enum GamePhase { menu, playing, roomClear, transitioning, gateComplete, gameOver }
+enum GamePhase { menu, playing, roomClear, arise, transitioning, gateComplete, gameOver }
 
 class ShadowMonarchGame extends FlameGame with HasCollisionDetection, KeyboardEvents, MouseMovementDetector {
   final _rng = Random();
@@ -38,10 +42,12 @@ class ShadowMonarchGame extends FlameGame with HasCollisionDetection, KeyboardEv
   Room? room;
   final _menuRenderer = MenuRenderer();
   final _audio = AudioManager();
+  late AriseEffect ariseEffect;
+  late RulersHand rulersHand;
+  final _shadowArmy = <ShadowSoldier>[];
 
   GamePhase phase = GamePhase.menu;
 
-  // Gate management
   Gate? _currentGate;
   int _gateNumber = 1;
   int _enemiesAlive = 0;
@@ -64,6 +70,12 @@ class ShadowMonarchGame extends FlameGame with HasCollisionDetection, KeyboardEv
 
     roomTransition = RoomTransition();
     add(roomTransition);
+
+    ariseEffect = AriseEffect();
+    add(ariseEffect);
+
+    rulersHand = RulersHand();
+    add(rulersHand);
 
     await _audio.init();
     _audio.playBgm(Config.menuBgmFile, volume: Config.menuBgmVolume);
@@ -104,6 +116,14 @@ class ShadowMonarchGame extends FlameGame with HasCollisionDetection, KeyboardEv
     hud = Hud(player: player, wave: 0, score: _score, gateNumber: _gateNumber);
     world.add(hud);
 
+    for (final shadow in _shadowArmy) {
+      shadow.position = player.position + Vector2(30, 30);
+      shadow.onAttackEnemy = _onShadowAttack;
+      world.add(shadow);
+    }
+
+    ariseEffect.onComplete = _onAriseComplete;
+
     _loadCurrentRoom();
   }
 
@@ -117,10 +137,8 @@ class ShadowMonarchGame extends FlameGame with HasCollisionDetection, KeyboardEv
     final roomData = gate.currentRoom;
     final layout = RoomGenerator.generate(roomData);
 
-    // Remove old room
     if (room case final room?) room.removeFromParent();
 
-    // Create new room
     room = Room(
       layout: layout,
       exitOpen: roomData.type == RoomType.rest || roomData.type == RoomType.treasure,
@@ -128,26 +146,26 @@ class ShadowMonarchGame extends FlameGame with HasCollisionDetection, KeyboardEv
     world.add(room!);
     room!.priority = -10;
 
-    // Position player at spawn
     player.position = layout.playerSpawn.clone();
 
-    // Update HUD
     hud.wave = gate.currentRoomIndex + 1;
     hud.enemiesLeft = roomData.enemyCount;
 
-    // Spawn enemies
     _enemiesAlive = 0;
-    if (roomData.type == RoomType.combat || roomData.type == RoomType.elite) {
-      _spawnEnemies(roomData, layout);
-    } else if (roomData.type == RoomType.boss) {
-      _spawnBoss(layout);
-    } else if (roomData.type == RoomType.rest) {
-      _handleRestRoom();
+    switch (roomData.type) {
+      case RoomType.combat || RoomType.elite:
+        _spawnEnemies(roomData, layout);
+      case RoomType.boss:
+        _spawnBoss(layout);
+      case RoomType.rest:
+        _handleRestRoom();
+      case RoomType.treasure:
     }
 
-    phase = (roomData.type == RoomType.rest || roomData.type == RoomType.treasure)
-        ? GamePhase.roomClear
-        : GamePhase.playing;
+    phase = switch (roomData.type) {
+      RoomType.rest || RoomType.treasure => GamePhase.roomClear,
+      _ => GamePhase.playing,
+    };
     _pendingRoomLoad = false;
   }
 
@@ -220,7 +238,86 @@ class ShadowMonarchGame extends FlameGame with HasCollisionDetection, KeyboardEv
     screenFx?.flash(Config.goldColor, intensity: 0.2);
     // TODO(mastersam07): Play SFX — boss defeated (victory fanfare)
 
+    _triggerArise(boss.position.x, boss.position.y, 'Igris', const Color(0xFFDC143C));
+  }
+
+  void _triggerArise(double x, double y, String name, Color color) {
+    phase = GamePhase.arise;
+    ariseEffect.trigger(x, y, name, color);
+  }
+
+  void _onAriseComplete() {
+    final igris = Igris(player: player)..position = Vector2(player.position.x + 30, player.position.y + 20);
+    igris.onAttackEnemy = _onShadowAttack;
+    _shadowArmy.add(igris);
+    world.add(igris);
+
     _onRoomCleared();
+  }
+
+  void _onShadowAttack(PositionComponent enemy, int damage) {
+    if (enemy is DireWolf && !enemy.isDead) {
+      enemy.takeDamage(damage);
+    } else if (enemy is StoneGolem && !enemy.isDead) {
+      enemy.takeDamage(damage);
+    } else if (enemy is ArmoredKnight && !enemy.isDead) {
+      enemy.takeDamage(damage);
+    } else if (enemy is StatueOfGod && !enemy.isDead) {
+      enemy.takeDamage(damage);
+    }
+    particles.spawnDirectional(
+      enemy.position.x,
+      enemy.position.y,
+      _rng.nextDouble() * 3.14 * 2,
+      5,
+      Config.shadowColor,
+      speed: 60,
+      maxLife: 0.2,
+    );
+  }
+
+  void _handleAbilities() {
+    if (inputState.ability1JustPressed && rulersHand.isReady && player.mp >= RulersHand.mpCost) {
+      final enemies = <(double, double, PositionComponent)>[];
+      for (final w in world.children.whereType<DireWolf>()) {
+        if (!w.isDead) enemies.add((w.position.x, w.position.y, w));
+      }
+      for (final g in world.children.whereType<StoneGolem>()) {
+        if (!g.isDead) enemies.add((g.position.x, g.position.y, g));
+      }
+      for (final k in world.children.whereType<ArmoredKnight>()) {
+        if (!k.isDead) enemies.add((k.position.x, k.position.y, k));
+      }
+      for (final b in world.children.whereType<StatueOfGod>()) {
+        if (!b.isDead) enemies.add((b.position.x, b.position.y, b));
+      }
+
+      final result = rulersHand.activate(
+        player.position.x,
+        player.position.y,
+        inputState.aimAngle,
+        enemies,
+      );
+      if (result != null) {
+        player.mp -= RulersHand.mpCost;
+        final (tx, ty) = result;
+        for (final (ex, ey, enemy) in enemies) {
+          if ((ex - tx).abs() < 1 && (ey - ty).abs() < 1) {
+            final dx = player.position.x - enemy.position.x;
+            final dy = player.position.y - enemy.position.y;
+            final dist = sqrt(dx * dx + dy * dy);
+            if (dist > 1) {
+              enemy.position.x += dx / dist * 80;
+              enemy.position.y += dy / dist * 80;
+            }
+            break;
+          }
+        }
+        screenFx?.shake(2);
+        particles.spawnDirectional(tx, ty, inputState.aimAngle + 3.14, 10, Config.playerColor,
+            speed: 100, maxLife: 0.3);
+      }
+    }
   }
 
   void _onRoomCleared() {
@@ -269,6 +366,31 @@ class ShadowMonarchGame extends FlameGame with HasCollisionDetection, KeyboardEv
     if (damage >= Config.comboFinisherDamage) {
       screenFx?.shake(4);
       screenFx?.flash(Config.goldColor, intensity: 0.1);
+    }
+  }
+
+  void _handleDebugCheats() {
+    if (inputState.debugKill) {
+      for (final w in world.children.whereType<DireWolf>().toList()) {
+        if (!w.isDead) w.takeDamage(999);
+      }
+      for (final g in world.children.whereType<StoneGolem>().toList()) {
+        if (!g.isDead) g.takeDamage(999);
+      }
+      for (final k in world.children.whereType<ArmoredKnight>().toList()) {
+        if (!k.isDead) k.takeDamage(999);
+      }
+      for (final b in world.children.whereType<StatueOfGod>().toList()) {
+        if (!b.isDead) b.takeDamage(999);
+      }
+      screenFx?.flash(Config.goldColor, intensity: 0.1);
+    }
+
+    if (inputState.debugHeal) {
+      player.hp = Config.playerMaxHp;
+      player.mp = Config.playerMaxMp;
+      player.shadowGauge = Config.shadowGaugeMax;
+      particles.spawn(player.position.x, player.position.y, 15, Config.healColor, speed: 40, maxLife: 0.5);
     }
   }
 
@@ -365,6 +487,8 @@ class ShadowMonarchGame extends FlameGame with HasCollisionDetection, KeyboardEv
 
       case GamePhase.playing:
         _checkEnemyPlayerCollision();
+        _handleAbilities();
+        _handleDebugCheats();
         _keyboard.playerWorldX = player.position.x;
         _keyboard.playerWorldY = player.position.y;
 
@@ -385,6 +509,8 @@ class ShadowMonarchGame extends FlameGame with HasCollisionDetection, KeyboardEv
 
       case GamePhase.gameOver:
         if (inputState.attackJustPressed) startGame();
+
+      case GamePhase.arise:
     }
 
     inputState.reset();
@@ -406,6 +532,8 @@ class ShadowMonarchGame extends FlameGame with HasCollisionDetection, KeyboardEv
     }
 
     roomTransition.renderOverlay(canvas, Size(sz.x, sz.y));
+    ariseEffect.renderOverlay(canvas, Size(sz.x, sz.y));
+    rulersHand.renderEffect(canvas);
 
     switch (phase) {
       case GamePhase.menu:
