@@ -20,6 +20,14 @@ Built with **Flutter**, **Flame**, and **CustomPainter** for cinematic effects. 
 - PS5 DualSense / generic gamepad support (D-pad, analog sticks, buttons)
 - Atmospheric menu with Solo Leveling soundtrack
 
+## Screenshots
+
+<p>
+  <img src="docs/1.png" width="270" alt="Combat" />
+  <img src="docs/2.png" width="270" alt="Boss Fight" />
+  <img src="docs/3.png" width="270" alt="Game Over" />
+</p>
+
 ## Running
 
 ```bash
